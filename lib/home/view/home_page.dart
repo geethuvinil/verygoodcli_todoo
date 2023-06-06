@@ -1,118 +1,203 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
+import '../../add_more_task/more_task.dart';
+import '../../add_more_task/view/more_task_screen.dart';
+
+
+
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController _textEditingTaskNameController =
-      TextEditingController();
-  TextEditingController _textEditingTaskDescriptionController =
-      TextEditingController();
-      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-      final FirebaseAuth _auth = FirebaseAuth.instance;
-      late  CollectionReference todoRef;
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+ 
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late CollectionReference _todoRef;
+  late FirebaseStorage _storage;
 
-      @override
+  // Future <void> getImage()async {
+  //   final imagePicker=ImagePicker();
+  //   images=await imagePicker.pickMultiImage();
+  // }
+
+  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    todoRef = _firestore.collection('todoTask');
+    _todoRef = _firestore.collection("todo task");
+    _storage = FirebaseStorage.instance;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Task"),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.blueGrey,
+        title: Text("Todo",style: TextStyle(fontSize: 20),),
+        actions: [
+           IconButton(onPressed: () {
+            Navigator.push(context,MaterialPageRoute(builder:(context)=>MoreTaskScreen() ));
+          }, icon: Icon(Icons.person)),
+          
+          IconButton(onPressed: () {
+            //Navigator.push(context,MaterialPageRoute(builder:(context)=>Product() ));
+          }, icon: Icon(Icons.shop)),
+           IconButton(onPressed: () {
+           // Navigator.push(context,MaterialPageRoute(builder:(context)=>loginPage() ));
+          }, icon: Icon(Icons.logout)),
+        ],
+
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 30,
-            ),
-            Center(
-              child: Text(
-                "Add your task title and description",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 42,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              child: TextField(
+                controller: _titleController,
+                decoration: InputDecoration(
+                  hintText: 'title',
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 18, right: 18, top: 20),
-              child: TextFormField(
-                keyboardType: TextInputType.name,
-                controller: _textEditingTaskNameController,
-                decoration: InputDecoration(hintText: "Title"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              height: 42,
+              child: TextField(
+                controller: _descriptionController,
+                decoration: InputDecoration(
+                  hintText: 'description',
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 18, right: 18, top: 20),
-              child: TextFormField(
-                keyboardType: TextInputType.multiline,
-                controller: _textEditingTaskDescriptionController,
-                decoration: InputDecoration(hintText: "Description"),
-              ),
-            ),
-            TextButton(onPressed: () async{
-                await todoRef.add({
-                  "title":_textEditingTaskNameController.text,
-                  "description":_textEditingTaskDescriptionController.text,
-                  "userId":_auth.currentUser!.uid,
+          ),
+
+
+          // SizedBox(height: 50,
+          //   child: TextButton(onPressed: () {
+          //     getImage();
+              
+          //   }, child: Text("IMAGE")),
+
+
+          // ),
+          TextButton(
+              onPressed: () async {
+                final time=DateTime.now();
+               await _todoRef.add({
+                  "title": _titleController.text,
+                  "description": _descriptionController.text,
+                  "time": time,
+                "userid": _auth.currentUser!.uid,
+               
                 });
-                _textEditingTaskNameController.clear();
-                _textEditingTaskDescriptionController.clear();
-            }, child: Text("Add")),
-            Divider(),
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text("Task added")));
 
-             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: todoRef.where("userId",isEqualTo: _auth.currentUser!.uid).snapshots(),
-                builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if(!snapshot.hasData){
-                  return  Center(child: CircularProgressIndicator());
-                  }
-                  final List<DocumentSnapshot> documents = snapshot.data!.docs;
-               return ListView.builder(
-                itemCount: documents.length,
-                itemBuilder:  (BuildContext context,int index) {
-                final document = documents[index];
-                 return ListTile(
-             title: Text(document["title"]),
-                 );
-               },);
-             },),),
-          ],
-        ),
-      ),
-    );
-  }
+                _titleController.clear();
+                _descriptionController.clear();
+              },
+              child: Text("Add")),
 
-  Padding taskTile() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return Row(
-            children: [
-              Column(
-                children: [Text("task1"), Text("Aadasd")],
-              ),
-              IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.edit,
-                    color: Colors.blue,
-                  )),
-              IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
-            ],
-          );
-        },
+
+
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _todoRef
+                  .where('userid', isEqualTo: _auth.currentUser!.uid) // Query the tasks by user ID
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                final List<DocumentSnapshot> documents = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: documents.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final document = documents[index];
+                    
+                   
+                    return ListTile(
+                      title: Text(document['title'] as String),
+                      subtitle: Text(document['description'] as String),
+                     trailing: IconButton(onPressed:() {
+                       showDialog(context: context, builder: (BuildContext context) {
+                       
+                        return AlertDialog(
+                          title: Text("edit task"),
+                          content: Column(
+                            children: [
+                              TextField(
+                                controller: _titleController,
+                                decoration: InputDecoration(
+                                  hintText: "title",
+                                  
+                                ),
+                              ),
+                               TextField(
+                                controller: _descriptionController,
+                                decoration: InputDecoration(
+                                  hintText: "description",
+                                  
+                                ),
+                              ),
+                              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextButton(onPressed: () {
+                                    FirebaseFirestore.instance.collection("todo task").doc(document.id).update(
+                                      {"title":_titleController.text,
+                                      "description":_descriptionController.text
+                                      }
+                                    );
+                                    _titleController.clear();
+                                    _descriptionController.clear();
+                                    Navigator.pop(context);
+                                  }, child: Text("save",style: TextStyle(fontSize: 20),)),
+                                  TextButton(onPressed: () {
+                                    Navigator.pop(context);
+                                  }, child: Text("cancel",style: TextStyle(fontSize: 20),)),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                         
+                       },);
+
+                     }, 
+                      icon: Icon(Icons.edit)),
+
+                      onLongPress: () async {
+                        // Delete the document
+                        final docRef = _todoRef.doc(document.id);
+                        await docRef.delete();
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+
+
+        ],
       ),
     );
   }

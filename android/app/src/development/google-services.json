@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "460025401205",
-    "project_id": "todoo-a0bb6",
-    "storage_bucket": "todoo-a0bb6.appspot.com"
+    "project_number": "46231769772",
+    "project_id": "verygoodclitodo-c6a79",
+    "storage_bucket": "verygoodclitodo-c6a79.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:460025401205:android:0fbb526ee7433ab855cd3c",
+        "mobilesdk_app_id": "1:46231769772:android:65a66a987a9a36a157c509",
         "android_client_info": {
           "package_name": "com.example.verygoodcore.todoo.dev"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "46231769772-4to1o1v3q4b9t3co45r5g6oprmv7k60f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCOLxUWEDTrZBD9oHtQzVu3exzFS5Ak8QU"
+          "current_key": "AIzaSyA8lw256vN9zC8T0y98sqsrtSStK-pHhy4"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "46231769772-4to1o1v3q4b9t3co45r5g6oprmv7k60f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

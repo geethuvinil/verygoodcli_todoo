@@ -88,13 +88,16 @@ class _SignupPageState extends State<SignupPage> {
               ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      
                       await SignupRepo().createUser(
                           _textEditingNameController.text,
                           _textEditingEmailController.text,
                           _textEditingNumberController.text,
                           _textEditingPasswordController.text,
                           context);
+                          //snackbar
                           Navigator.push(context, MaterialPageRoute(builder: (context) => LoginDetailsPage(),));
+                          
                     }
                   },
                   child: Text("REGISTER"))
