@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../repo/add_task_repo.dart';
+
 class MoreTaskScreen extends StatefulWidget {
   const MoreTaskScreen({super.key});
 
@@ -53,7 +55,17 @@ class _MoreTaskScreenState extends State<MoreTaskScreen> {
           height: MediaQuery.of(context).size.height* .01,
         ),
         ElevatedButton(onPressed: () {
-          
+          if(_formKey.currentState!.validate()){
+            AddTaskRepo().createMoreTask(
+              _textEditingTitleController.text,
+               _textEditingDescriptionController.text,
+                _textEditingDurationController.text, 
+                images!);
+                _textEditingTitleController.clear();
+                _textEditingDescriptionController.clear();
+                _textEditingDurationController.clear();
+          }
+
         }, child: Text("Add more tasks!"))
         
         
