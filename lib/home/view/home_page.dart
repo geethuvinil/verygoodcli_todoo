@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:todoo/task_details/view/task_details_page.dart';
 
 import '../../add_more_task/more_task.dart';
 import '../../add_more_task/view/more_task_screen.dart';
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           }, icon: Icon(Icons.person)),
           
           IconButton(onPressed: () {
-            //Navigator.push(context,MaterialPageRoute(builder:(context)=>Product() ));
+          Navigator.push(context,MaterialPageRoute(builder:(context)=>TaskDetailsPage() ));
           }, icon: Icon(Icons.shop)),
            IconButton(onPressed: () {
            // Navigator.push(context,MaterialPageRoute(builder:(context)=>loginPage() ));

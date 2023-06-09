@@ -1,0 +1,1 @@
+export 'view/task_details_page.dart';
